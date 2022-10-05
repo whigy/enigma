@@ -1,7 +1,37 @@
 import textwrap
 
 class Rotor():
-    def __init__(self, selected_type, rotor_position):
+    """ A class of a single rotor
+
+    Attributes:
+        selected_type (str): selected rotor type defined in file.
+        rotor_position (str): rotor position. Updates each time the rotor rotates
+        ring_position (str): ring position.
+        notch_position (str):
+            standard notch position. Check:
+            https://en.wikipedia.org/wiki/Enigma_rotor_details#Turnover_notch_positions
+        standard_mapping (dict):
+            a dictionary of initial encode/decode mapping with initial position
+            and ring position both set with "AAA"
+        updated_mapping (dict):
+            a dictionary of encode/decode mapping updated according to initial position
+            and ring position offset. Updates each time the rotor rotates
+
+    Methods:
+        rotate_and_update_mapping(shift: str):
+            Calculate updated_mapping based on shift of rotor position
+        encrypt_forward(letter: str): encrypt a letter in the forward manner
+        encrypt_backward(letter: str): encrypt a letter in the backward manner
+    """
+    def __init__(self, selected_type, rotor_position, ring_position = None):
+        """Initialize the Rotor Class and set the mapping
+
+        Args:
+            selected_type (str):
+                selected reflector type defined in file. Support "A", "B", "C"
+            rotor_position (str): rotor position. Updates each time the rotor rotates
+            ring_position (str): ring position. TODO
+        """
         with open('./cyphers/rotors.txt', 'r') as file:
             rotors = {}
             for line in file:
@@ -13,7 +43,6 @@ class Rotor():
         self.updated_mapping = rotors[selected_type]
         self.rotor_position = rotor_position
 
-        # notch positions are fixed: https://en.wikipedia.org/wiki/Enigma_rotor_details#Turnover_notch_positions
         notch_positions = {
             "I"  : "Q",  # If rotor steps from Q to R, the next rotor is advanced
             "II" : "E",  # If rotor steps from E to F, the next rotor is advanced
@@ -62,7 +91,25 @@ class Rotor():
 
 
 class Rotors():
-    def __init__(self, order, rotor_positions):
+    """ A class of 3 rotors with initial settings
+
+    Attributes:
+        rotors(list[Rotor]):  a list of Rotor class
+        order (list): order from right to left.
+
+    Methods:
+        rotate(): Update the mappings of the 3 rotor based on shift of rotor position and notch
+        encrypt_forward(letter: str): encrypt a letter in the forward manner through the 3 rotors
+        encrypt_backward(letter: str): encrypt a letter in the backward manner through the 3 rotors
+    """
+    def __init__(self, order, rotor_positions, ring_positions = None):
+        """Initialize the Rotor Class and set the mapping
+
+        Args:
+            order (list): order from right to left.
+            rotor_positions (list): rotor from right to left.
+            ring_positions (list): ring position from right to left. TODO
+        """
         self.rotors = {}
         self.order = order
         for i, o in enumerate(order):
