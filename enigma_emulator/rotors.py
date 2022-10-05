@@ -94,12 +94,12 @@ class Rotors():
             if advance_next_flag:
                 shift = (self.rotors[i].get_input_mapping_index(self.rotors[i].rotor_position) + 1) % 26
                 self.rotors[i].rotate_and_update_mapping(shift)
-                print(f"-  rotated : {self.rotors[i].updated_mapping}, offset with next {shift}")
+                print(f"-  rotated : {self.rotors[i].updated_mapping}, shift from initial {shift}")
 
                 if self.rotors[i].rotor_position != self.rotors[i].notch_position: # Advance the next rotor
                     advance_next_flag = False
 
                 self.rotors[i].rotor_position = "A" if self.rotors[i].rotor_position == "Z" else chr(ord(self.rotors[i].rotor_position) + 1)
         
-        # print(f"rotated_rotors: {advanced_rotor_position}")
+        print(f"rotor rotated position {self.rotors[2].rotor_position:>2} {self.rotors[1].rotor_position:>2} {self.rotors[0].rotor_position:>2}")
 
