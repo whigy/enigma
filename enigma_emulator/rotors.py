@@ -6,7 +6,7 @@ class Rotor():
     Attributes:
         selected_type (str): selected rotor type defined in file.
         rotor_position (str): rotor position. Updates each time the rotor rotates
-        ring_position (str): ring position.
+        ring_position (str): ring position. The offset of the wires VS the positions. Doesn't affect notches
         notch_position (str):
             standard notch position. Check:
             https://en.wikipedia.org/wiki/Enigma_rotor_details#Turnover_notch_positions
@@ -23,7 +23,7 @@ class Rotor():
         encrypt_forward(letter: str): encrypt a letter in the forward manner
         encrypt_backward(letter: str): encrypt a letter in the backward manner
     """
-    def __init__(self, selected_type, rotor_position, ring_position = None):
+    def __init__(self, selected_type, rotor_position, ring_position):
         """Initialize the Rotor Class and set the mapping
 
         Args:
@@ -39,9 +39,14 @@ class Rotor():
                 rotors[type] = rotor.rstrip()
         
         self.selected_type = selected_type
-        self.standard_mapping = rotors[selected_type]
-        self.updated_mapping = rotors[selected_type]
         self.rotor_position = rotor_position
+        self.ring_position = ring_position
+
+        self.standard_mapping = rotors[selected_type]
+        # Ring offset is the oposite of the rotor rotation
+        ring_offset = - (self._get_input_mapping_index(ring_position)) % 26
+        self.standard_mapping = self._calculate_new_mapping(ring_offset)
+        self.updated_mapping = self.standard_mapping
 
         notch_positions = {
             "I"  : "Q",  # If rotor steps from Q to R, the next rotor is advanced
@@ -52,19 +57,24 @@ class Rotor():
         }
 
         self.notch_position = notch_positions[selected_type]
-        print(f"Seleted rotor     {selected_type}: {self.updated_mapping}. Notch position {self.notch_position}")
+        print(f"Seleted rotor     {selected_type}: Initial position {self.rotor_position}. Ring position {self.ring_position}")
+        print(f"                  updated mapping: {self.updated_mapping}. Notch position {self.notch_position}")
 
-    def get_input_mapping_index(self, input_letter):
+    def _get_input_mapping_index(self, input_letter):
         return ord(input_letter.upper()) - ord("A")
 
-    def rotate_and_update_mapping(self, shift):
+    def _calculate_new_mapping(self, shift):
         new_mapping = ""
-        self.updated_mapping =  self.standard_mapping[shift:] + self.standard_mapping[:shift]
-        for x in self.updated_mapping:
+        updated_mapping =  self.standard_mapping[shift:] + self.standard_mapping[:shift]
+        for x in updated_mapping:
             if ord(x) - shift < ord("A"):
                 new_mapping += chr(ord(x) - shift + 26)
             else:
                 new_mapping += chr(ord(x) - shift)
+        return new_mapping
+
+    def rotate_and_update_mapping(self, shift):
+        new_mapping = self._calculate_new_mapping(shift)
         self.updated_mapping = new_mapping
 
     def encrypt_forward(self, letter):
@@ -73,7 +83,7 @@ class Rotor():
         Runs before the reflector
         """
         letter = letter.upper()
-        index = self.get_input_mapping_index(letter)
+        index = self._get_input_mapping_index(letter)
         mapped_to = self.updated_mapping[index]
         print(f"Rotor{self.selected_type:>5}: input {letter} - output {mapped_to}; mapping {self.updated_mapping}")
         return mapped_to
@@ -102,7 +112,7 @@ class Rotors():
         encrypt_forward(letter: str): encrypt a letter in the forward manner through the 3 rotors
         encrypt_backward(letter: str): encrypt a letter in the backward manner through the 3 rotors
     """
-    def __init__(self, order, rotor_positions, ring_positions = None):
+    def __init__(self, order, rotor_positions, ring_positions):
         """Initialize the Rotor Class and set the mapping
 
         Args:
@@ -113,12 +123,13 @@ class Rotors():
         self.rotors = {}
         self.order = order
         for i, o in enumerate(order):
-            self.rotors[i] = Rotor(o, rotor_positions[i])
+            self.rotors[i] = Rotor(o, rotor_positions[i], ring_positions[i])
         info = f"""
         Rotors           {1:>5} {2:>5} {3:>5}
         ---------------------------------------------------
         selected         {order[2]:>5} {order[1]:>5} {order[0]:>5}
         initial position {rotor_positions[2]:>5} {rotor_positions[1]:>5} {rotor_positions[0]:>5}
+        ring position    {ring_positions[2]:>5} {ring_positions[1]:>5} {ring_positions[0]:>5}
         """
         print(textwrap.dedent(info))
 
@@ -139,7 +150,7 @@ class Rotors():
         for i, r in enumerate(self.order):
             print(f"Rotor{r:>5}: Advance: {advance_next_flag}")
             if advance_next_flag:
-                shift = (self.rotors[i].get_input_mapping_index(self.rotors[i].rotor_position) + 1) % 26
+                shift = (self.rotors[i]._get_input_mapping_index(self.rotors[i].rotor_position) + 1) % 26
                 self.rotors[i].rotate_and_update_mapping(shift)
                 print(f"-  rotated : {self.rotors[i].updated_mapping}, shift from initial {shift}")
 
@@ -149,4 +160,3 @@ class Rotors():
                 self.rotors[i].rotor_position = "A" if self.rotors[i].rotor_position == "Z" else chr(ord(self.rotors[i].rotor_position) + 1)
         
         print(f"rotor rotated position {self.rotors[2].rotor_position:>2} {self.rotors[1].rotor_position:>2} {self.rotors[0].rotor_position:>2}")
-

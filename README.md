@@ -24,3 +24,4 @@ Run `./enigma` to encode a message. Example:
 ```
 ./enigma encode "THEQUICKBROWNFOXJUMPSOVERTHELAZYDOG" -r "III:1-1 II:1-1 I:1-1" -p "QA ED FG BO LP CS RT UJ HN ZW" -v
 ```
+./enigma encode "VAUFLPVWMQIVFWNPCGPGVPIMKUWZREEDTTQ" -r "III:1-1 II:1-1 I:1-1" -p "QA ED FG BO LP CS RT UJ HN ZW" -v
