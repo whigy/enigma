@@ -1,5 +1,10 @@
 # Enigma workshop
 
+
+## `enigma_emulator`
+An Enigma emulator that encode/decode text message according to initial settings. The initial settings include:
+- Pl
+
 ## `ciphers/`
 
 Contains cyphers for all rotors and reflectors
@@ -16,12 +21,3 @@ I:1 II:2 III:10
 ```
 
 Where the first line contains the rotors, their starting position and the plugboard settings (if any). The second line is the input text. The third line is the encrypted text. The last line is the rotors and their position after the message was entered.
-
-## `enigma`
-
-Run `./enigma` to encode a message. Example:
-
-```
-./enigma encode "THEQUICKBROWNFOXJUMPSOVERTHELAZYDOG" -r "III:1-1 II:1-1 I:1-1" -p "QA ED FG BO LP CS RT UJ HN ZW" -v
-```
-./enigma encode "VAUFLPVWMQIVFWNPCGPGVPIMKUWZREEDTTQ" -r "III:1-1 II:1-1 I:1-1" -p "QA ED FG BO LP CS RT UJ HN ZW" -v

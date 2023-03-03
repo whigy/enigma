@@ -39,12 +39,16 @@ def encrypt(
 
 
 if __name__ == '__main__':
+    # Configurable
     initial_positions = ["A", "A", "A"]
     order = ["III", "II", "I"] # lower to upper
     ring_positions = ["B", "Z", "A"]
     plugs = "QA ED FG BO LP CS RT UJ HN ZW"
 
+    # String to encrypt
     string_to_encrypt = "THEQUICKBROWNFOXJUMPSOVERTHELAZYDOG"
+
+    # Encrypt
     string_encrypted = encrypt(
         string_to_encrypt,
         plugboard_settings=plugs,
